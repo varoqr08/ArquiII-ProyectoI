@@ -6,7 +6,7 @@ import random
 from L1 import L1
 import queue
 from control_L1 import Control_L1
-from control_L2 import Control_L2
+from control_BusAux import Control_BusAux
 import logging
 
 mutex = Lock()
@@ -19,21 +19,21 @@ class Core(threading.Thread):
     memory = ''
     data = ''
     core = ''
-    chip = 0
+    asociate = 0
     instruction = ''
 
 
     #Constructor
-    def __init__(self, core, chip, main_memory, cache_L100, cache_L101, cache_L110, cache_L111, cache_L20, cache_L21):
-        threading.Thread.__init__(self, name=core, target=Core.instruction_generator, args=(self, main_memory,cache_L100, cache_L101, cache_L110, cache_L111, cache_L20, cache_L21, core, chip,))
+    def __init__(self, core, asociate, main_memory, cache_L100, cache_L101, cache_L110, cache_L111, cache_BusAux0, cache_BusAux1):
+        threading.Thread.__init__(self, name=core, target=Core.instruction_generator, args=(self, main_memory,cache_L100, cache_L101, cache_L110, cache_L111, cache_BusAux0, cache_BusAux1, core, asociate,))
         self.core = core
-        self.chip = chip
+        self.asociate = asociate
          #Definicion de los LOG
         logging.basicConfig(filename='LOG.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
         
-    def instruction_generator(self, main_memory,cache_L100, cache_L101, cache_L110, cache_L111, cache_L20, cache_L21,core, chip):
+    def instruction_generator(self, main_memory,cache_L100, cache_L101, cache_L110, cache_L111, cache_BusAux0, cache_BusAux1,core, asociate):
         
         
         #Contador
@@ -42,7 +42,7 @@ class Core(threading.Thread):
         data_write = ''
 
         control = Control_L1()
-        control_L2 = Control_L2()
+        control_BusAux = Control_BusAux()
 
        
 
@@ -62,10 +62,10 @@ class Core(threading.Thread):
             if(distribution==0):
                 self.operation = 'READ'
                 self.memory = bin(memory)
-                self.instruction = str(self.core) + ','+str(self.chip)+': '+self.operation+' '+str(self.memory)
-                print('Se lanza la instruccion '+str(self.core) + ','+str(self.chip)+': '+self.operation+' '+str(self.memory))
-                logging.info('Se lanza la instruccion '+str(self.core) + ','+str(self.chip)+': '+self.operation+' '+str(self.memory))
-                control.read(control_L2, aux_memory, cache_L100, cache_L101, cache_L110, cache_L111, cache_L20, cache_L21,  main_memory, self.core, self.chip) 
+                self.instruction = self.operation+' '+str(self.memory)
+                print('Se lanza la instruccion '+self.operation+' '+str(self.memory))
+                logging.info('Se lanza la instruccion '+self.operation+' '+str(self.memory))
+                control.read(control_BusAux, aux_memory, cache_L100, cache_L101, cache_L110, cache_L111, cache_BusAux0, cache_BusAux1,  main_memory, self.core, self.asociate) 
                 counter += 1    
 
             #Instruccion de escritura
@@ -75,10 +75,10 @@ class Core(threading.Thread):
                 self.operation = 'WRITE'
                 self.memory = bin(memory)
                 self.data = data_write
-                self.instruction = str(self.core) + ','+str(self.chip)+': '+self.operation+' '+str(self.memory)+'; '+self.data
-                print('Se lanza la instruccion '+str(self.core) + ','+str(self.chip)+': '+self.operation+' '+str(self.memory)+'; '+self.data)
-                logging.info('Se lanza la instruccion '+str(self.core) + ','+str(self.chip)+': '+self.operation+' '+str(self.memory)+'; '+self.data)
-                control.write(control_L2, aux_memory, cache_L100, cache_L101, cache_L110, cache_L111, cache_L20, cache_L21, main_memory,  self.core, self.chip, self.data)
+                self.instruction = self.operation+' '+str(self.memory)+'; '+self.data
+                print('Se lanza la instruccion '+self.operation+' '+str(self.memory)+'; '+self.data)
+                logging.info('Se lanza la instruccion '+self.operation+' '+str(self.memory)+'; '+self.data)
+                control.write(control_BusAux, aux_memory, cache_L100, cache_L101, cache_L110, cache_L111, cache_BusAux0, cache_BusAux1, main_memory,  self.core, self.asociate, self.data)
                 data_write = ''
                 #counter += 1 
                 
@@ -87,12 +87,9 @@ class Core(threading.Thread):
             #Instruccion de CALC
             else:
                 self.operation = 'CALC'
-                self.instruction = str(self.core) + ','+str(self.chip)+': '+self.operation
-                print('Se lanza la instruccion '+str(self.core) + ','+str(self.chip)+': '+self.operation)
-                logging.info('Se lanza la instruccion '+str(self.core) + ','+str(self.chip)+': '+self.operation)
+                self.instruction = self.operation
+                print('Se lanza la instruccion '+self.operation)
+                logging.info('Se lanza la instruccion '+self.operation)
                 time.sleep(3)
                 
                 
-        #print(self.core + ','+str(self.chip))
-            time.sleep(1)
-            #mutex.release()

@@ -3,9 +3,9 @@ import time
 import numpy as np
 import random
 from memory import Memory
-from chip import Chip
+from asociate import asociate
 from L1 import L1
-from L2 import L2
+from BusAux import BusAux
 import logging
 from tkinter import *
 from table import Table
@@ -18,18 +18,18 @@ def main():
     cache_L1_10 = L1(1,'P0')
     cache_L1_11 = L1(1,'P1')
 
-    cache_L2_0 = L2(0)
-    cache_L2_1 = L2(1)
+    cache_BusAux_0 = BusAux(0)
+    cache_BusAux_1 = BusAux(1)
 
 
 
     time.sleep(5)
 
-    #Invocacion para generar los chips
-    chip0 = Chip(0, main_memory, cache_L1_00, cache_L1_01, cache_L1_10, cache_L1_11, cache_L2_0, cache_L2_1)
-    chip1 = Chip(1, main_memory, cache_L1_00, cache_L1_01, cache_L1_10, cache_L1_11, cache_L2_0, cache_L2_1)
-    chip0.start()
-    chip1.start()
+    #Invocacion para generar los asociates
+    asociate0 = asociate(0, main_memory, cache_L1_00, cache_L1_01, cache_L1_10, cache_L1_11, cache_BusAux_0, cache_BusAux_1)
+    asociate1 = asociate(1, main_memory, cache_L1_00, cache_L1_01, cache_L1_10, cache_L1_11, cache_BusAux_0, cache_BusAux_1)
+    asociate0.start()
+    asociate1.start()
 
     root = Tk()
     root.configure(bg='light blue')
@@ -60,13 +60,13 @@ def main():
     label_titulo_L100 = Label(text = 'Cache L1, Procesador3')
     label_titulo_L100.config(font=('Sans', 20))
     label_titulo_L100.config(bg="light blue") 
-    label_titulo_L100.place(x=990,y=150)
+    label_titulo_L100.place(x=900,y=150)
 
     #Cache L1 11
     label_titulo_L101 = Label(text = 'Cache L1, Procesador4')
     label_titulo_L101.config(font=('Sans', 20))
     label_titulo_L101.config(bg="light blue") 
-    label_titulo_L101.place(x=990,y=300)
+    label_titulo_L101.place(x=900,y=300)
     
     #Memoria
     label_titulo_M = Label(text = 'Memoria Principal')
@@ -75,39 +75,39 @@ def main():
     label_titulo_M.place(x=530,y=100)
 
     #Tablas
-    #Tabla para cache L1 P0 chip 0
-    table_L100 = Table(root, 3, 4)
+    #Tabla para cache L1 P0 asociate 0
+    table_L100 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L100.createTable(titles, 'gray', 'white', True)
     table_L100.place(x=80, y=200)
 
-    #Tabla para cache L1 P1 chip 0
-    table_L101 = Table(root, 3, 4)
+    #Tabla para cache L1 P1 asociate 0
+    table_L101 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L101.createTable(titles, 'gray', 'white', True)
     table_L101.place(x=80, y=350)
 
 
-    #Tabla para cache L1 P0 chip 1
-    table_L110 = Table(root, 3, 4)
+    #Tabla para cache L1 P0 asociate 1
+    table_L110 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L110.createTable(titles, 'gray', 'white', True)
-    table_L110.place(x=980, y=200)
+    table_L110.place(x=900, y=200)
 
-     #Tabla para cache L1 P0 chip 1
-    table_L111 = Table(root, 3, 4)
+     #Tabla para cache L1 P0 asociate 1
+    table_L111 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L111.createTable(titles, 'gray', 'white', True)
-    table_L111.place(x=980, y=350)
+    table_L111.place(x=900, y=350)
 
-    #Tabla para cache L2 chip 0
+    #Tabla para cache BusAux asociate 0
     table_memory = Table(root, 17, 3)
     titles = ['Direccion','Estado','Dato']
     table_memory.createTable(titles, 'gray', 'white', False)
     table_memory.place(x=530, y=150)
 
     #Tabla de instrucciones
-    #Tabla para cache L2 chip 0
+    #Tabla para cache BusAux asociate 0
     inst_1 = StringVar()
     instruction00 = Label(textvariable = inst_1, font=("Papayrus", 14), bg='light blue')
     instruction00.pack()
@@ -116,17 +116,17 @@ def main():
     inst_2 = StringVar()
     instruction01 = Label(textvariable = inst_2, font=("Papayrus", 14), bg='light blue')
     instruction01.pack()
-    instruction01.place(x=80, y=75)
+    instruction01.place(x=80, y=100)
 
     inst_3 = StringVar()
     instruction10 = Label(textvariable = inst_3, font=("Papayrus", 14), bg='light blue')
     instruction10.pack()
-    instruction10.place(x=1020, y=50)
+    instruction10.place(x=900, y=50)
 
     inst_4 = StringVar()
     instruction11 = Label(textvariable = inst_4, font=("Papayrus", 14), bg='light blue')
     instruction11.pack()
-    instruction11.place(x=1020, y=75)
+    instruction11.place(x=900, y=100)
 
 
     
@@ -135,10 +135,10 @@ def main():
     while(True):
         time.sleep(1) # Need this to slow the changes down
 
-        inst_1.set(chip0.core0.instruction)
-        inst_2.set(chip0.core1.instruction)
-        inst_3.set(chip1.core0.instruction)
-        inst_4.set(chip1.core1.instruction)
+        inst_1.set("Procesador 1: "+asociate0.core0.instruction)
+        inst_2.set("Procesador 2: "+asociate0.core1.instruction)
+        inst_3.set("Procesador 3: "+asociate1.core0.instruction)
+        inst_4.set("Procesador 4: "+asociate1.core1.instruction)
 
         #Tabla de cache L1 P1 actualizada
         table_L100.set(1,1,cache_L1_00.lines[0].state)
@@ -147,6 +147,16 @@ def main():
         table_L100.set(2,1,cache_L1_00.lines[1].state)
         table_L100.set(2,2,cache_L1_00.lines[1].directionBin)
         table_L100.set(2,3,cache_L1_00.lines[1].data)
+        table_L100.set(3,1,cache_L1_00.lines[0].state)
+        table_L100.set(3,2,cache_L1_00.lines[0].directionBin)
+        table_L100.set(3,3,cache_L1_00.lines[0].data) 
+        table_L100.set(4,1,cache_L1_00.lines[1].state)
+        table_L100.set(4,2,cache_L1_00.lines[1].directionBin)
+        table_L100.set(4,3,cache_L1_00.lines[1].data)
+
+
+        
+
 
         #Tabla de cache L1 P2 actualizada
         table_L101.set(1,1,cache_L1_01.lines[0].state)
@@ -155,6 +165,12 @@ def main():
         table_L101.set(2,1,cache_L1_01.lines[1].state)
         table_L101.set(2,2,cache_L1_01.lines[1].directionBin)
         table_L101.set(2,3,cache_L1_01.lines[1].data)
+        table_L101.set(3,1,cache_L1_00.lines[0].state)
+        table_L101.set(3,2,cache_L1_00.lines[0].directionBin)
+        table_L101.set(3,3,cache_L1_00.lines[0].data) 
+        table_L101.set(4,1,cache_L1_00.lines[1].state)
+        table_L101.set(4,2,cache_L1_00.lines[1].directionBin)
+        table_L101.set(4,3,cache_L1_00.lines[1].data)
 
 
         #Tabla de cache L1 P3 actualizada
@@ -164,6 +180,12 @@ def main():
         table_L110.set(2,1,cache_L1_10.lines[1].state)
         table_L110.set(2,2,cache_L1_10.lines[1].directionBin)
         table_L110.set(2,3,cache_L1_10.lines[1].data)
+        table_L110.set(3,1,cache_L1_00.lines[0].state)
+        table_L110.set(3,2,cache_L1_00.lines[0].directionBin)
+        table_L110.set(3,3,cache_L1_00.lines[0].data) 
+        table_L110.set(4,1,cache_L1_00.lines[1].state)
+        table_L110.set(4,2,cache_L1_00.lines[1].directionBin)
+        table_L110.set(4,3,cache_L1_00.lines[1].data)
 
         #Tabla de cache L1 P4 actualizada
         table_L111.set(1,1,cache_L1_11.lines[0].state)
@@ -172,6 +194,12 @@ def main():
         table_L111.set(2,1,cache_L1_11.lines[1].state)
         table_L111.set(2,2,cache_L1_11.lines[1].directionBin)
         table_L111.set(2,3,cache_L1_11.lines[1].data)
+        table_L111.set(3,1,cache_L1_00.lines[0].state)
+        table_L111.set(3,2,cache_L1_00.lines[0].directionBin)
+        table_L111.set(3,3,cache_L1_00.lines[0].data) 
+        table_L111.set(4,1,cache_L1_00.lines[1].state)
+        table_L111.set(4,2,cache_L1_00.lines[1].directionBin)
+        table_L111.set(4,3,cache_L1_00.lines[1].data)
 
 
         #Tabla de memoria principal actualizada

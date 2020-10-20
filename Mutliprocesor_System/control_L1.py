@@ -5,7 +5,7 @@ import random
 from memory import Memory
 from L1 import L1
 from threading import Thread, Lock
-from control_L2 import Control_L2
+from control_BusAux import Control_BusAux
 import logging
 
 class Control_L1(threading.Thread):
@@ -17,13 +17,13 @@ class Control_L1(threading.Thread):
         self
 
 
-    def read(self, controlL2, direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processL20, cache_processL21, memory, core, chip):
+    def read(self, controlBusAux, direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processBusAux0, cache_processBusAux1, memory, core, asociate):
 
-        logging.info('Busca el dato en la cache  L1 '+str(core)+','+str(chip))
+        logging.info('Busca el dato en la cache  L1 '+str(core)+','+str(asociate))
         #Controlador de caches L1
         
         #Asignacion de caches a utilizar
-        if (chip == 0):
+        if (asociate == 0):
             if (core == 'P0'):
                 cache_request =  cache_process00
                 cache_recive = cache_process01
@@ -51,42 +51,46 @@ class Control_L1(threading.Thread):
             #Caso en el que la linea esta en invalido
             if (cache_request.lines[line_change].state == 'I'):
                 #Mensaje en el bus
-                bus = 'Read miss from cahe L1 '+str(cache_request.chip)+' '+str(cache_request.core)
+                bus = 'Read miss from cahe L1 '+str(cache_request.asociate)+' '+str(cache_request.core)
                 logging.info(bus)
                 #Verifica los estados de la otra cache
                 #Caso en que este M en la otra cache
                 if (cache_recive.lines[line_change].state == 'M' and cache_recive.lines[line_change].direction == direc_mem):
                     cache_recive.lines[line_change].state = 'S'
-                    owner = ','+cache_recive.core+','+str(cache_recive.chip)
+                    owner = ','+cache_recive.core+','+str(cache_recive.asociate)
+                
+                else:
+                    cache_recive.lines[line_change].state = 'E'
+                    owner = ','+cache_recive.core+','+str(cache_recive.asociate)
                         
-                #Llamada al control de L2 en caso invalido
-                controlL2.read(direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processL20, cache_processL21, chip, core, memory, owner)
+                #Llamada al control de BusAux en caso invalido
+                controlBusAux.read(direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processBusAux0, cache_processBusAux1, asociate, core, memory, owner)
 
             #Caso en el que la linea esta en Compartido o Modificado
             else:
-                bus = 'Read Hit '+str(cache_request.chip)+' '+str(cache_request.core)
+                bus = 'Read Hit '+str(cache_request.asociate)+' '+str(cache_request.core)
                 logging.info(bus)
                 return None
             
         #No Acierta la posicion de memoria en cache
         else:
-            bus = 'Read miss from cahe L1 '+str(cache_request.chip)+' '+str(cache_request.core)
+            bus = 'Read miss from cahe L1 '+str(cache_request.asociate)+' '+str(cache_request.core)
             logging.info(bus)
             #Verifica los estados de la otra cache
             if (cache_recive.lines[line_change].state == 'M' and cache_recive.lines[line_change].direction == direc_mem):
                 cache_recive.lines[line_change].state = 'S'
-                owner = ','+cache_recive.core+','+str(cache_recive.chip)
-            controlL2.read(direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processL20, cache_processL21, chip, core, memory, owner)
+                owner = ','+cache_recive.core+','+str(cache_recive.asociate)
+            controlBusAux.read(direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processBusAux0, cache_processBusAux1, asociate, core, memory, owner)
         
 
 
 ##########################Escribir en las L1
 
-    def write(self, controlL2, direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processL20, cache_processL21, memory, core, chip, data):
-        logging.info('Peticion de escritura generada en la cache L1 '+str(core)+','+str(chip))
+    def write(self, controlBusAux, direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processBusAux0, cache_processBusAux1, memory, core, asociate, data):
+        logging.info('Peticion de escritura generada en la cache L1 '+str(core)+','+str(asociate))
         time.sleep(1)
         #Asignacion de caches a utilizar
-        if (chip == 0):
+        if (asociate == 0):
             if (core == 'P0'):
                 cache_request =  cache_process00
                 cache_recive = cache_process01
@@ -106,14 +110,14 @@ class Control_L1(threading.Thread):
 
         #Escritura en caches y en memoria
 
-        bus = 'Write Miss from cahe L1 '+str(cache_request.chip)+' '+str(cache_request.core)
+        bus = 'Write Miss from cahe L1 '+str(cache_request.asociate)+' '+str(cache_request.core)
         logging.info(bus)
         #Caso en que este M en la otra cache
         if ((cache_recive.lines[line_change].state == 'M' or cache_recive.lines[line_change].state == 'S') and cache_recive.lines[line_change].direction == direc_mem):
             cache_recive.lines[line_change].state = 'I'
-            owner = ','+cache_recive.core+','+str(cache_recive.chip)
+            owner = ','+cache_recive.core+','+str(cache_recive.asociate)
       
-        controlL2.write(direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processL20, cache_processL21, chip, core, memory, owner, data)
+        controlBusAux.write(direc_mem, cache_process00, cache_process01, cache_process10, cache_process11, cache_processBusAux0, cache_processBusAux1, asociate, core, memory, owner, data)
 
        
 
