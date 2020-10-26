@@ -1,17 +1,15 @@
-
 import threading
-import time 
 import numpy as np
+import time 
 import random
 from Lines_BusAux import Lines_BusAux
-import threading
 
 
 class BusAux(threading.Thread):
 
     #Lineas de memoria caché
     asociate = 0
-    core = 'P0'
+    group = 'P0'
     line0 = Lines_BusAux(0,'I',0,'0')
     line1 = Lines_BusAux(1,'I',0,'0')
     line2 = Lines_BusAux(2,'I',0,'0')

@@ -23,7 +23,7 @@ def main():
 
 
 
-    time.sleep(5)
+    time.sleep(3)
 
     #Invocacion para generar los asociates
     asociate0 = asociate(0, main_memory, cache_L1_00, cache_L1_01, cache_L1_10, cache_L1_11, cache_BusAux_0, cache_BusAux_1)
@@ -56,13 +56,13 @@ def main():
     label_titulo_L101.place(x=85,y=300)
 
 
-    #Cache L1 10
+    #Cache L1 P3
     label_titulo_L100 = Label(text = 'Cache L1, Procesador3')
     label_titulo_L100.config(font=('Sans', 20))
     label_titulo_L100.config(bg="light blue") 
     label_titulo_L100.place(x=900,y=150)
 
-    #Cache L1 11
+    #Cache L1 P4
     label_titulo_L101 = Label(text = 'Cache L1, Procesador4')
     label_titulo_L101.config(font=('Sans', 20))
     label_titulo_L101.config(bg="light blue") 
@@ -75,39 +75,41 @@ def main():
     label_titulo_M.place(x=530,y=100)
 
     #Tablas
-    #Tabla para cache L1 P0 asociate 0
+
+    #Tabla para Memoria Principal
+    table_memory = Table(root, 17, 3)
+    titles = ['Direccion','Dueño','Dato']
+    table_memory.createTable(titles, 'gray', 'white', False)
+    table_memory.place(x=530, y=150)
+
+
+    #Tabla para cache L1 Procesador1
     table_L100 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L100.createTable(titles, 'gray', 'white', True)
     table_L100.place(x=80, y=200)
 
-    #Tabla para cache L1 P1 asociate 0
+    #Tabla para cache L1 Procesador2
     table_L101 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L101.createTable(titles, 'gray', 'white', True)
     table_L101.place(x=80, y=350)
 
 
-    #Tabla para cache L1 P0 asociate 1
+    #Tabla para cache L1 Procesador3
     table_L110 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L110.createTable(titles, 'gray', 'white', True)
     table_L110.place(x=900, y=200)
 
-     #Tabla para cache L1 P0 asociate 1
+     #Tabla para cache L1 Procesador4
     table_L111 = Table(root, 5, 4)
     titles = ['#Linea','Estado','Dir Memoria','Dato']
     table_L111.createTable(titles, 'gray', 'white', True)
     table_L111.place(x=900, y=350)
 
-    #Tabla para cache BusAux asociate 0
-    table_memory = Table(root, 17, 3)
-    titles = ['Direccion','Estado','Dato']
-    table_memory.createTable(titles, 'gray', 'white', False)
-    table_memory.place(x=530, y=150)
 
-    #Tabla de instrucciones
-    #Tabla para cache BusAux asociate 0
+    #Escritura de Instrucciones
     inst_1 = StringVar()
     instruction00 = Label(textvariable = inst_1, font=("Papayrus", 14), bg='light blue')
     instruction00.pack()
@@ -133,12 +135,12 @@ def main():
     
 
     while(True):
-        time.sleep(1) # Need this to slow the changes down
+        time.sleep(2) 
 
-        inst_1.set("Procesador 1: "+asociate0.core0.instruction)
-        inst_2.set("Procesador 2: "+asociate0.core1.instruction)
-        inst_3.set("Procesador 3: "+asociate1.core0.instruction)
-        inst_4.set("Procesador 4: "+asociate1.core1.instruction)
+        inst_1.set("Procesador 1: "+asociate0.group0.instruction)
+        inst_2.set("Procesador 2: "+asociate0.group1.instruction)
+        inst_3.set("Procesador 3: "+asociate1.group0.instruction)
+        inst_4.set("Procesador 4: "+asociate1.group1.instruction)
 
         #Tabla de cache L1 P1 actualizada
         table_L100.set(1,1,cache_L1_00.lines[0].state)
@@ -153,10 +155,6 @@ def main():
         table_L100.set(4,1,cache_L1_00.lines[1].state)
         table_L100.set(4,2,cache_L1_00.lines[1].directionBin)
         table_L100.set(4,3,cache_L1_00.lines[1].data)
-
-
-        
-
 
         #Tabla de cache L1 P2 actualizada
         table_L101.set(1,1,cache_L1_01.lines[0].state)
@@ -203,52 +201,37 @@ def main():
 
 
         #Tabla de memoria principal actualizada
-        table_memory.set(1,1,main_memory.lines[0].state)
+        table_memory.set(1,1,main_memory.lines[0].owner)
         table_memory.set(1,2,main_memory.lines[0].data)
-
-        table_memory.set(2,1,main_memory.lines[1].state)
+        table_memory.set(2,1,main_memory.lines[1].owner)
         table_memory.set(2,2,main_memory.lines[1].data)
-
-        table_memory.set(3,1,main_memory.lines[2].state)
+        table_memory.set(3,1,main_memory.lines[2].owner)
         table_memory.set(3,2,main_memory.lines[2].data)
-
-        table_memory.set(4,1,main_memory.lines[3].state)
+        table_memory.set(4,1,main_memory.lines[3].owner)
         table_memory.set(4,2,main_memory.lines[3].data)
-
-        table_memory.set(5,1,main_memory.lines[4].state)
+        table_memory.set(5,1,main_memory.lines[4].owner)
         table_memory.set(5,2,main_memory.lines[4].data)
-
-        table_memory.set(6,1,main_memory.lines[5].state)
+        table_memory.set(6,1,main_memory.lines[5].owner)
         table_memory.set(6,2,main_memory.lines[5].data)
-
-        table_memory.set(7,1,main_memory.lines[6].state)
+        table_memory.set(7,1,main_memory.lines[6].owner)
         table_memory.set(7,2,main_memory.lines[6].data)
-
-        table_memory.set(8,1,main_memory.lines[7].state)
+        table_memory.set(8,1,main_memory.lines[7].owner)
         table_memory.set(8,2,main_memory.lines[7].data)
-
-        table_memory.set(9,1,main_memory.lines[8].state)
+        table_memory.set(9,1,main_memory.lines[8].owner)
         table_memory.set(9,2,main_memory.lines[8].data)
-
-        table_memory.set(10,1,main_memory.lines[9].state)
+        table_memory.set(10,1,main_memory.lines[9].owner)
         table_memory.set(10,2,main_memory.lines[9].data)
-
-        table_memory.set(11,1,main_memory.lines[10].state)
+        table_memory.set(11,1,main_memory.lines[10].owner)
         table_memory.set(11,2,main_memory.lines[10].data)
-
-        table_memory.set(12,1,main_memory.lines[11].state)
+        table_memory.set(12,1,main_memory.lines[11].owner)
         table_memory.set(12,2,main_memory.lines[11].data)
-
-        table_memory.set(13,1,main_memory.lines[12].state)
+        table_memory.set(13,1,main_memory.lines[12].owner)
         table_memory.set(13,2,main_memory.lines[12].data)
-
-        table_memory.set(14,1,main_memory.lines[13].state)
+        table_memory.set(14,1,main_memory.lines[13].owner)
         table_memory.set(14,2,main_memory.lines[13].data)
-
-        table_memory.set(15,1,main_memory.lines[14].state)
+        table_memory.set(15,1,main_memory.lines[14].owner)
         table_memory.set(15,2,main_memory.lines[14].data)
-
-        table_memory.set(16,1,main_memory.lines[15].state)
+        table_memory.set(16,1,main_memory.lines[15].owner)
         table_memory.set(16,2,main_memory.lines[15].data)
 
         root.update_idletasks()

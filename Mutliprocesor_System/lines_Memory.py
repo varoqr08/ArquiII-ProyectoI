@@ -1,4 +1,3 @@
-
 class Lines_Memory:
 
     position = 0
@@ -11,11 +10,12 @@ class Lines_Memory:
         self.position = position
         self.positionBin = bin(position)
 
+    def setOwner(self, state, owner):
+        self.state = state
+        self.owner = owner
+
     def setLine(self, state, owner, data):
         self.state = state
         self.owner = owner
         self.data = data
 
-    def setOwner(self, state, owner):
-        self.state = state
-        self.owner = owner
